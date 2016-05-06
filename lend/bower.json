@@ -1,0 +1,6 @@
+{
+  "name": "lend",
+  "dependencies": {
+    "semantic": "^2.1.8"
+  }
+}
