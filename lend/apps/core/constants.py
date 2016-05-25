@@ -11,4 +11,4 @@ CMD ["/bin/sh"]
 
 '''
 
-base_url='unix://var/run/docker.sock'
+base_url = 'unix://var/run/docker.sock'
