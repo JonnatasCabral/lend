@@ -51,6 +51,7 @@ coverage.xml
 
 # Django stuff:
 *.log
+*.sqlite3
 
 # Sphinx documentation
 docs/_build/
@@ -61,4 +62,4 @@ target/
 #Ipython Notebook
 .ipynb_checkpoints
 
-lend/static/bower_components
+**/bower_components

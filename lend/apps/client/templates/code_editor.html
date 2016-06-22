@@ -2,9 +2,9 @@
 {% load static %}
 
 {% block extra_css %}
-    
+
     <style type="text/css" media="screen">
-        #editor { 
+        #editor {
             top: 100px;
             left: 100px;
             width: 1000px;
@@ -12,24 +12,25 @@
             position: relative;
         }
     </style>
-    
+
 {% endblock extra_css %}
 {% block content %}
 
 <div class="ui top attached button">Button before grid</div>
 <div class="ui grid">
-      
+
     <div id="editor"></div>
 </div>
 <div class="ui grid"></div>
 <div class="ui bottom attached button green">Button after grid</div>
-        
-    
-        
-    <script src=" {% static "ace-builds/src-noconflict/ace.js" %}" type="text/javascript" charset="utf-8"></script>
+    <script src=" {% static "ace-builds/src-min-noconflict/ace.js" %}" type="text/javascript" charset="utf-8"></script>
         <script>
             var editor = ace.edit("editor");
             editor.setTheme("ace/theme/monokai");
-            editor.getSession().setMode("ace/mode/javascript");
+            editor.getSession().setMode("ace/mode/python");
+            editor.setOptions({
+                fontFamily: "Inconsolata, Monaco, Monospace",
+                fontSize: "10pt"
+            });
         </script>
 {% endblock content %}
