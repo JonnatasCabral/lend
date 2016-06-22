@@ -1,29 +1,35 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<title>ACE in Action</title>
-<style type="text/css" media="screen">
-    #editor { 
-        position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-    }
-</style>
-</head>
-<body>
-<form action="demo_form.asp" id="usrform">
-<div id="editor"></div>
-  <input type="submit">
-</form>
+
+{% block extra_css %}
     
-<script src=" {% static "ace-builds/src-noconflict/ace.js" %}" type="text/javascript" charset="utf-8"></script>
-    <script>
-        var editor = ace.edit("editor");
-        editor.setTheme("ace/theme/monokai");
-        editor.getSession().setMode("ace/mode/javascript");
-    </script>
-</body>
-</html>
+    <style type="text/css" media="screen">
+        #editor { 
+            top: 100px;
+            left: 100px;
+            width: 1000px;
+            height: 500px;
+            position: relative;
+        }
+    </style>
+    
+{% endblock extra_css %}
+{% block content %}
+
+<div class="ui top attached button">Button before grid</div>
+<div class="ui grid">
+      
+    <div id="editor"></div>
+</div>
+<div class="ui grid"></div>
+<div class="ui bottom attached button green">Button after grid</div>
+        
+    
+        
+    <script src=" {% static "ace-builds/src-noconflict/ace.js" %}" type="text/javascript" charset="utf-8"></script>
+        <script>
+            var editor = ace.edit("editor");
+            editor.setTheme("ace/theme/monokai");
+            editor.getSession().setMode("ace/mode/javascript");
+        </script>
+{% endblock content %}
