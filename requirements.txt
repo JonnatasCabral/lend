@@ -2,8 +2,9 @@ dj-database-url==0.4.1
 django-allauth==0.25.2
 Django==1.9.6
 docker-py==1.8.1
+ipdb==0.10.1
 ipython==4.2.0
 psycopg2==2.6.1
 python-decouple==3.0
-unipath==1.1
 python-iprofile==0.3.3
+unipath==1.1

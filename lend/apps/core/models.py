@@ -1,12 +1,11 @@
-from __future__ import unicode_literals
+# -*- coding: utf-8 -*-
 
 from django.db import models
-
-# Create your models here.
 
 
 class LendModel(models.Model):
 
+    created_by = models.ForeignKey('socialaccount.SocialAccount')
     created_at = models.DateTimeField(auto_now_add=True)
     removed_at = models.DateTimeField(blank=True, null=True)
     active = models.BooleanField(default=True)
