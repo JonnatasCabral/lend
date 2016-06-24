@@ -4,7 +4,7 @@ from core.models import LendModel
 from django.db import models
 
 
-class DockerContainer(LendModel):
+class Container(LendModel):
 
     name = models.CharField(max_length=255, null=True, blank=True)
     cid = models.CharField(max_length=255, null=True, blank=True)
@@ -17,9 +17,9 @@ class DockerContainer(LendModel):
         verbose_name_plural = 'Containers'
 
 
-class Code(LendModel):
+class UploadedCode(LendModel):
 
-    container = models.ForeignKey(DockerContainer)
+    container = models.ForeignKey(Container)
     content = models.TextField()
     requirements = models.TextField()
 
@@ -29,8 +29,8 @@ class Code(LendModel):
         )
 
     class Meta:
-        verbose_name = 'Container'
-        verbose_name_plural = 'Containers'
+        verbose_name = 'Uploded Code'
+        verbose_name_plural = 'Uploaded Codes'
 
 
 class CSVFile(LendModel):
@@ -45,3 +45,11 @@ class CSVFile(LendModel):
     class Meta:
         verbose_name = 'CSV File'
         verbose_name_plural = 'CSV Files'
+
+
+class CSVFileCode(LendModel):
+    csv_file = models.ForeignKey(CSVFile)
+    uploaded_code = models.ForeignKey(UploadedCode)
+
+    def __unicode__(self):
+        return 'csv=%s, code=%s' % (self.csv_file.id, self.uploaded_code.id)

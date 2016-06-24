@@ -10,6 +10,7 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+from django.core.urlresolvers import reverse_lazy
 from decouple import config
 from dj_database_url import parse
 from sys import path
@@ -50,6 +51,9 @@ THIRD_APPS = [
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_APPS
 
 SITE_ID = 1
+
+LOGIN_REDIRECT_URL = reverse_lazy('index')
+LOGIN_URL = reverse_lazy('login')
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
