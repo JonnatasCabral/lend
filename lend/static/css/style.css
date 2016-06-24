@@ -126,4 +126,9 @@ a {
 		padding-right: 1em;
 	}
 
+	.no-padding-right{
+		text-align: right;
+		padding-right: 0;
+	}
+
 }
