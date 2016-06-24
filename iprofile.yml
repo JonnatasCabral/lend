@@ -2,4 +2,4 @@ settings:
     active: lend
     django: lend.settings
     last: lend
-    path: iprofiles
+    path: lend/iprofiles
