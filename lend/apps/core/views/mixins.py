@@ -13,7 +13,7 @@ class LoginRequiredMixin(object):
             request, *args, **kwargs)
 
 
-class OwnershipRequiredMixin(LoginRequiredMixin):
+class OwnershipRequiredMixin(object):
     model = None
     pk_url_kwarg = 'pk'
 
