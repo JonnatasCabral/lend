@@ -9,31 +9,26 @@ https://docs.djangoproject.com/en/1.9/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
-from sys import path
-import os
-from unipath import Path
 
-# Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from decouple import config
+from dj_database_url import parse
+from sys import path
+from unipath import Path
+import os
+
 BASE_DIR = Path(__file__).absolute().ancestor(1)
 path.insert(0, os.path.join(BASE_DIR, 'apps'))
-# insert path to apps
-PROJECT_NAME = 'lend'
-# Quick-start development settings - unsuitable for production
-# See https://docs.djangoproject.com/en/1.9/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'a+row7b3%csm=y0%tro7y3(+$p06$sx-wwrtan8yc^vvn(az1l'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+PROJECT_NAME = config('PROJECT_NAME', default='lend')
+SECRET_KEY = config('SECRET_KEY', default='debug')
+DEBUG = config('DEBUG', default=True)
 
 ALLOWED_HOSTS = []
 
-
-# Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
+    'django.contrib.sites',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
@@ -45,9 +40,16 @@ LOCAL_APPS = [
     'client'
 ]
 
-THIRD_APPS = []
+THIRD_APPS = [
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_APPS
+
+SITE_ID = 1
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -61,6 +63,11 @@ MIDDLEWARE_CLASSES = [
 ]
 
 ROOT_URLCONF = 'lend.urls'
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
 
 TEMPLATES = [
     {
@@ -80,39 +87,12 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'lend.wsgi.application'
 
-
-# Database
-# https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+    'default': config(
+        'DATABASE_URL', default='sqlite:///{0}/{1}'.format(
+            BASE_DIR.child('db'), 'alpha.sqlite3'
+        ), cast=parse),
 }
-
-
-# Password validation
-# https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
-
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
-
-
-# Internationalization
-# https://docs.djangoproject.com/en/1.9/topics/i18n/
 
 LANGUAGE_CODE = 'en-us'
 
@@ -124,9 +104,14 @@ USE_L10N = True
 
 USE_TZ = True
 
+STATIC_ROOT = config('STATIC_ROOT', default=BASE_DIR.child('staticfiles'))
 
-# Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.9/howto/static-files/
+STATIC_URL = config('STATIC_URL', default='/static/')
 
-STATIC_URL = '/static/'
 STATICFILES_DIRS = (BASE_DIR.child('static'), )
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'djangobower.finders.BowerFinder'
+)
