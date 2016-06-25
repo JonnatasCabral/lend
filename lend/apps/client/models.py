@@ -13,6 +13,12 @@ class Container(LendModel):
     description = models.CharField(max_length=255, null=True, blank=True)
     result = models.TextField(null=True, blank=True)
 
+    def get_object(self):
+        return {
+            'Id': self.cid,
+            'Warnings': None
+        }
+
     def __unicode__(self):
         return '%s, created_by=%s' % (self.name or self.cid, self.created_by)
 

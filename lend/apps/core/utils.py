@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from io import BytesIO
 from docker import Client
+from .constants import dockerfile
 
 
 class Docker(object):
@@ -41,10 +42,12 @@ class Docker(object):
         return self.cli.containers()[0]["Id"]
 
     def container_down(self, container):
-
         return self.cli.stop(container)
 
-    def container_run_command(self, container, command=''):
+    def container_rm(self, container):
+        return self.cli.remove_container(container)
+
+    def container_run_command(self, container, command):
         """
         Recebe um container e um comando, o ultimo no formato de str. Retorna
         o um dict com a chave para essa execução.
@@ -57,5 +60,7 @@ class Docker(object):
         Recebe um dict com a chave da execução de um exec_create
         e retorna o resultado que o bash retornou.
         """
-        result = self.cli.exec_start(exec_create)
-        return result
+        return self.cli.exec_start(exec_create)
+
+
+docker = Docker(dockerfile)

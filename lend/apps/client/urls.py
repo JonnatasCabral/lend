@@ -4,6 +4,7 @@ from client.views import code_editor_view
 from client.views import containers_view
 from client.views import create_container_view
 from client.views import delete_container_view
+from client.views import running_container_view
 from django.conf.urls import url
 
 urlpatterns = [
@@ -12,5 +13,7 @@ urlpatterns = [
     url(r'^containers/(?P<container_pk>[\d]+)/$',
         code_editor_view, name='editor'),
     url(r'^containers/delete/(?P<container_pk>[\d]+)/$',
-        delete_container_view, name='delete_container')
+        delete_container_view, name='delete_container'),
+    url(r'^containers/running/(?P<container_pk>[\d]+)/$',
+        running_container_view, name='running_container')
 ]
