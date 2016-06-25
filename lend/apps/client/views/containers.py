@@ -60,13 +60,16 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
 
         docker = Docker(dockerfile)
         docker_container = docker.container
-        docker.container_up(docker_container, dir=container_django.pk)
+        if not docker.cli.containers():
+            container_up = docker.container_up(docker_container, dir=container_django.pk)
+        else:
+            container_up = docker.cli.containers()[0]["Id"]
         command='python {0}.py'.format(container_django.title)
-        result = docker.container_run_command(docker_container, command=command)
+        result = docker.container_run_command(container_up, command=command)
         return result
 
     def set_file(self, container, code):
-        
+
         if not os.path.exists('/tmp/{0}'.format(container.pk)):
             os.makedirs('/tmp/{0}'.format(container.pk))
         file = open('/tmp/{0}/{1}.py'.format(

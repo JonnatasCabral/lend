@@ -36,7 +36,9 @@ class Docker(object):
         """
         Recebe um dict com Id do container e roda o container
         """
-        return self.cli.start(container,  binds=["/tmp/{0}:/home/codes".format(dir)])
+        
+        self.cli.start(container,  binds=["/tmp/{0}:/home/codes".format(dir)])
+        return self.cli.containers()[0]["Id"]
 
     def container_down(self, container):
 
@@ -55,4 +57,5 @@ class Docker(object):
         Recebe um dict com a chave da execução de um exec_create
         e retorna o resultado que o bash retornou.
         """
-        return self.cli.exec_start(exec_create)
+        result = self.cli.exec_start(exec_create)
+        return result
