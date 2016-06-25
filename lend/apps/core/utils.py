@@ -2,7 +2,6 @@
 
 from io import BytesIO
 from docker import Client
-from core.constants import dockerfile
 
 
 class Docker(object):
@@ -13,8 +12,6 @@ class Docker(object):
 
     def __init__(self):
         self.cli = Client(base_url='unix://var/run/docker.sock')
-        self.container = self.container_create()
-        self.image = self.create_image(dockerfile)
 
     def create_image(self, dockerfile, tag='python/lend', rm=True):
         f = BytesIO(dockerfile)
@@ -41,8 +38,10 @@ class Docker(object):
         return self.cli.start(container,  binds=["/tmp/codes:/home/codes"])
 
     def container_down(self, container):
-
         return self.cli.stop(container)
+
+    def container_rm(self, container):
+        return self.cli.remove_container(container)
 
     def container_run_command(self, container, command):
         """
@@ -59,3 +58,6 @@ class Docker(object):
         e retorna o resultado que o bash retornou.
         """
         return self.cli.exec_start(exec_create)
+
+
+docker = Docker()

@@ -5,11 +5,16 @@ from client.forms import EditContainerForm
 from client.models import Container
 from client.models import CSVFile
 from client.models import UploadedCode
+from client.tasks import create_and_run_container
+from client.tasks import run_container
+from core.utils import docker
 from core.views import LoginRequiredMixin
 from core.views import OwnershipRequiredMixin
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
 from django.views.generic import FormView
 from django.views.generic import ListView
+from django.views.generic import DetailView
 from django.views.generic import RedirectView
 
 
@@ -27,23 +32,35 @@ class ContainersListView(LoginRequiredMixin, ListView):
             **kwargs).filter(created_by=self.request.user).activated()
 
 
+class RunningContainerView(ContainerMixin, OwnershipRequiredMixin, DetailView):
+    template_name = 'client/running.html'
+
+
 class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
     template_name = 'client/editor.html'
     form_class = EditContainerForm
+
+    def get(self, request, *args, **kwargs):
+        container = self.get_object()
+        is_running = docker.cli.inspect_container(
+            container.get_object())['State']['Running']
+        if is_running:
+            return HttpResponseRedirect(reverse(
+                'client:running_container', args=[container.pk]))
+        return super(CodeEditorView, self).get(request, *args, **kwargs)
 
     def get_initial(self):
         initial = super(CodeEditorView, self).get_initial()
         container = self.get_object()
         try:
-            csv_file = container.csvfile_set.latest('pk').content.file
+            initial['csv_file'] = container.csvfile_set.latest(
+                'pk').content.file
         except CSVFile.DoesNotExist:
-            csv_file = None
+            pass
         code = container.uploadedcode_set.latest('pk')
-
         initial.update({
             'title': container.title,
             'description': container.description,
-            'csv_file': csv_file,
             'code': code.content,
             'requirements': code.requirements
         })
@@ -76,6 +93,7 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
                     created_by=self.request.user,
                     container=container
                 )
+        run_container(container.pk)
         return form_valid
 
     def get_success_url(self):
@@ -113,6 +131,7 @@ class CreateContainerView(LoginRequiredMixin, FormView):
                 created_by=self.request.user,
                 container=container
             )
+        create_and_run_container(container.pk)
         return form_valid
 
     def get_success_url(self):
@@ -125,6 +144,7 @@ class DeleteContainerView(
     def get(self, request, *args, **kwargs):
         container = self.get_object()
         container.deactivate()
+        docker.container_rm(container.get_object())
         return super(DeleteContainerView, self).get(request, *args, **kwargs)
 
     def get_redirect_url(self, **kwargs):
@@ -135,3 +155,4 @@ code_editor_view = CodeEditorView.as_view()
 containers_view = ContainersListView.as_view()
 create_container_view = CreateContainerView.as_view()
 delete_container_view = DeleteContainerView.as_view()
+running_container_view = RunningContainerView.as_view()
