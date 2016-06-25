@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import os
 from client.forms import CreateContainerForm
 from client.forms import EditContainerForm
 from client.models import Container
@@ -11,7 +12,8 @@ from django.core.urlresolvers import reverse
 from django.views.generic import FormView
 from django.views.generic import ListView
 from django.views.generic import RedirectView
-
+from core.constants import dockerfile
+from core.utils import Docker
 
 class ContainerMixin(object):
     model = Container
@@ -31,6 +33,11 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
     template_name = 'client/editor.html'
     form_class = EditContainerForm
 
+    def get_context_data(self, **kwargs):
+        context = super(CodeEditorView, self).get_context_data(**kwargs)
+        context['object'] = self.object
+        return context
+
     def get_initial(self):
         initial = super(CodeEditorView, self).get_initial()
         container = self.get_object()
@@ -47,8 +54,26 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
             'code': code.content,
             'requirements': code.requirements
         })
-
         return initial
+
+    def run_code_in_container(self, container_django):
+
+        docker = Docker(dockerfile)
+        docker_container = docker.container
+        docker.container_up(docker_container, dir=container_django.pk)
+        command='python {0}.py'.format(container_django.title)
+        result = docker.container_run_command(docker_container, command=command)
+        return result
+
+    def set_file(self, container, code):
+        
+        if not os.path.exists('/tmp/{0}'.format(container.pk)):
+            os.makedirs('/tmp/{0}'.format(container.pk))
+        file = open('/tmp/{0}/{1}.py'.format(
+            container.pk,
+            container.title), 'w')
+        file.write(code)
+        file.close()
 
     def form_valid(self, form):
         form_valid = super(CodeEditorView, self).form_valid(form)
@@ -56,9 +81,10 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
         container.title = form.cleaned_data['title']
         container.description = form.cleaned_data.get('description')
         container.save()
+
         code = UploadedCode.objects.filter(container=container).latest('pk')
         if form.cleaned_data.get('code', '').strip() != code.content.strip():
-            UploadedCode.objects.create(
+            uploaded_code = UploadedCode.objects.create(
                 created_by=self.request.user,
                 requirements=form.cleaned_data.get('requirements'),
                 container=container,
@@ -76,6 +102,9 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
                     created_by=self.request.user,
                     container=container
                 )
+        self.set_file(container, form.cleaned_data.get('code'))
+        container.result = self.run_code_in_container(container)
+        container.save()
         return form_valid
 
     def get_success_url(self):

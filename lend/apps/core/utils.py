@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from io import BytesIO
 from docker import Client
-from core.constants import dockerfile
 
 
 class Docker(object):
@@ -10,11 +9,11 @@ class Docker(object):
     image = None
     container = None
 
-    def __init__(self):
+    def __init__(self, dockerfile):
         self.cli = Client(base_url='unix://var/run/docker.sock')
         self.image = self.create_image(dockerfile)
         self.container = self.container_create()
-
+        
     def create_image(self, dockerfile, tag='python/lend', rm=True):
         f = BytesIO(dockerfile)
 
@@ -27,23 +26,23 @@ class Docker(object):
         container = self.cli.create_container(
             image='python/lend',
             stdin_open=True,
-            volumes={"/tmp/codes": {}},
+            volumes={"/tmp/": {}},
             tty=True,
             command='/bin/sh',
         )
         return container
 
-    def container_up(self, container):
+    def container_up(self, container, dir=''):
         """
         Recebe um dict com Id do container e roda o container
         """
-        return self.cli.start(container,  binds=["/tmp/codes:/home/codes"])
+        return self.cli.start(container,  binds=["/tmp/{0}:/home/codes".format(dir)])
 
     def container_down(self, container):
 
         return self.cli.stop(container)
 
-    def container_run_command(self, container, command):
+    def container_run_command(self, container, command=''):
         """
         Recebe um container e um comando, o ultimo no formato de str. Retorna
         o um dict com a chave para essa execução.

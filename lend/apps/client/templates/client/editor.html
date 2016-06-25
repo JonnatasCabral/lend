@@ -37,7 +37,8 @@
             <div class="col-lg-12">
                 <div class="well bs-component">
                     <pre id="editor">{{ form.code.value|default:'# Paste your code here.' }}</pre>
-                    <textarea type="text" class="hidden" id="code" name="code"></textarea>
+                    <textarea type="text" class="hidden" id="code" name="code">
+                    </textarea>
                     {% if form.code.errors %}
                     <div class="alert alert-dismissible alert-danger">
                         <button type="button" class="close" data-dismiss="alert">×</button>
@@ -51,6 +52,7 @@
                     <div class="form-group {% if form.requirements.errors %}has-error{% endif %}">
                         <div class="col-lg-12 monospaced">
                             {{ form.requirements }}
+
                         </div>
                         {% if form.requirements.errors %}
                         <div class="col-lg-12 error">
@@ -69,7 +71,7 @@
                                 Upload <input type="file" style="display: none;" id="csv_file" name="csv_file" value="{{ form.csv_file.value }}">
                             </label>
                             <a href="javascript:void();" id="clear_file" class="pull-right btn btn-default btn-raised">
-                                Clear
+                                Clear 
                             </a>
                         </div>
                         {% if form.csv_file.errors %}
@@ -84,6 +86,7 @@
         </form>
     </div>
 </div>
+{{object.result}}
 {% endblock container %}
 
 {% block btn-bottom-right %}
