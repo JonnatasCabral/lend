@@ -11,10 +11,10 @@
                 {{ container.title }}
                 </div>
                 <div class="text-center pull-right col-lg-2">
-                    <a href="">
+                    <a href="{% url 'client:editor' container.pk %}">
                         <i class="material-icons">mode_edit</i>
                     </a>
-                    <a href="">
+                    <a href="{% url 'client:delete_container' container.pk %}">
                         <i class="material-icons">delete</i>
                     </a>
                 </div>
@@ -24,10 +24,19 @@
             </div>
         </div>
     </div>
+    {% empty %}
+    <div class="col-lg-6 col-centered text-center">
+        <div class="user-container panel panel-default">
+            <div class="panel-body truncate">
+                You have no Containers.<br>
+                Create one by clicking on the button bellow.
+            </div>
+        </div>
+    </div>
     {% endfor %}
 </div>
 <div class="pull-bottom-right">
-    <a class="btn btn-default btn-fab">
+    <a class="btn btn-default btn-fab" href="{% url 'client:create_container'%}">
         <i class="material-icons">add_circle</i>
     </a>
 </div>
