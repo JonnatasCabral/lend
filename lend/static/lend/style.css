@@ -7,7 +7,7 @@ body {
 }
 
 a {
-    color: #4CAF50;
+    color: #272822;
 }
 
 a:hover {
@@ -19,13 +19,19 @@ a:hover {
     height: 500px;
 }
 
+
+.btn.btn-default.btn-raised {
+    background-color: #272822;
+    color: #fff;
+}
+
 .navbar .navbar-nav > .active > a:hover {
   color: inherit;
   background-color: inherit;
 }
 
 .navbar.navbar-default {
-    color: #4CAF50;
+    color: #272822;
     background-color:  #fff;
 }
 
@@ -55,7 +61,7 @@ a:hover {
 }
 
 .full-background {
-    background-color: #4CAF50;
+    background-color: #272822;
 }
 
 .monospaced {
@@ -79,12 +85,12 @@ a:hover {
 
 .card-panel {
     margin-top: 30px;
-    color: #4CAF50;
+    color: #272822;
 }
 
 .user-container .panel-heading {
     background-color: #fff;
-    color: #4CAF50;
+    color: #272822;
     font-weight: 700;
     padding: 20px;
 }
@@ -102,53 +108,58 @@ a:hover {
 }
 
 .btn.btn-default.btn-fab {
-    color: #4CAF50;
+    color: #272822;
 }
 
 .form-control,
 .form-group .form-control {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#4CAF50), to(#4CAF50)), -webkit-gradient(linear, left top, left bottom, from(#D2D2D2), to(#D2D2D2));
-    background-image: -webkit-linear-gradient(#4CAF50, #4CAF50), -webkit-linear-gradient(#D2D2D2, #D2D2D2);
-    background-image: -o-linear-gradient(#4CAF50, #4CAF50), -o-linear-gradient(#D2D2D2, #D2D2D2);
-    background-image: linear-gradient(#4CAF50, #4CAF50), linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#272822), to(#272822)), -webkit-gradient(linear, left top, left bottom, from(#D2D2D2), to(#D2D2D2));
+    background-image: -webkit-linear-gradient(#272822, #272822), -webkit-linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: -o-linear-gradient(#272822, #272822), -o-linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: linear-gradient(#272822, #272822), linear-gradient(#D2D2D2, #D2D2D2);
 
 }
 .form-group.is-focused .form-control {
-    background-image: -webkit-gradient(linear, left top, left bottom, from(#4CAF50), to(#4CAF50)), -webkit-gradient(linear, left top, left bottom, from(#D2D2D2), to(#D2D2D2));
-    background-image: -webkit-linear-gradient(#4CAF50, #4CAF50), -webkit-linear-gradient(#D2D2D2, #D2D2D2);
-    background-image: -o-linear-gradient(#4CAF50, #4CAF50), -o-linear-gradient(#D2D2D2, #D2D2D2);
-    background-image: linear-gradient(#4CAF50, #4CAF50), linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: -webkit-gradient(linear, left top, left bottom, from(#272822), to(#272822)), -webkit-gradient(linear, left top, left bottom, from(#D2D2D2), to(#D2D2D2));
+    background-image: -webkit-linear-gradient(#272822, #272822), -webkit-linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: -o-linear-gradient(#272822, #272822), -o-linear-gradient(#D2D2D2, #D2D2D2);
+    background-image: linear-gradient(#272822, #272822), linear-gradient(#D2D2D2, #D2D2D2);
 }
 
 .form-group.is-focused .form-control .material-input:after {
-    background-color: #4CAF50;
+    background-color: #272822;
 }
 .form-group.is-focused label,
 .form-group.is-focused label.control-label {
-    color: #4CAF50;
+    color: #272822;
 }
 
 .checkbox input[type=checkbox]:checked + .checkbox-material .check,
 label.checkbox-inline input[type=checkbox]:checked + .checkbox-material .check {
-  color: #4CAF50;
-  border-color: #4CAF50;
+  color: #272822;
+  border-color: #272822;
 }
 .checkbox input[type=checkbox]:checked + .checkbox-material .check:before,
 label.checkbox-inline input[type=checkbox]:checked + .checkbox-material .check:before {
-  color: #4CAF50;
+  color: #272822;
 }
 .togglebutton label input[type=checkbox]:checked + .toggle:after {
-  background-color: #4CAF50;
+  background-color: #272822;
 }
 .radio .check,
 label.radio-inline .check {
-  background-color: #4CAF50;
+  background-color: #272822;
 }
 .radio input[type=radio]:checked ~ .check,
 label.radio-inline input[type=radio]:checked ~ .check {
-  background-color: #4CAF50;
+  background-color: #272822;
 }
 .radio input[type=radio]:checked ~ .circle,
 label.radio-inline input[type=radio]:checked ~ .circle {
-  border-color: #4CAF50;
+  border-color: #272822;
+}
+
+.error {
+    color: #F44336;
+    font-size: 9pt;
 }

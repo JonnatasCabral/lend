@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from client.utils import upload_to_user_folder
 from core.models import LendModel
 from django.db import models
 
@@ -23,11 +24,11 @@ class UploadedCode(LendModel):
 
     container = models.ForeignKey(Container)
     content = models.TextField()
-    requirements = models.TextField()
+    requirements = models.TextField(null=True, blank=True)
 
     def __unicode__(self):
         return '%s, container=%s' % (
-            self.id, self.container.name or self.container.cid
+            self.id, self.container.title
         )
 
     class Meta:
@@ -37,21 +38,14 @@ class UploadedCode(LendModel):
 
 class CSVFile(LendModel):
 
-    content = models.TextField()
+    container = models.ForeignKey(Container)
+    content = models.FileField(upload_to=upload_to_user_folder)
 
     def __unicode__(self):
         return '%s, container=%s' % (
-            self.id, self.container.name or self.container.cid
+            self.id, self.container.title
         )
 
     class Meta:
         verbose_name = 'CSV File'
         verbose_name_plural = 'CSV Files'
-
-
-class CSVFileCode(LendModel):
-    csv_file = models.ForeignKey(CSVFile)
-    uploaded_code = models.ForeignKey(UploadedCode)
-
-    def __unicode__(self):
-        return 'csv=%s, code=%s' % (self.csv_file.id, self.uploaded_code.id)
