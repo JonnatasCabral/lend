@@ -15,8 +15,6 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         social_app = SocialApp.objects.get_or_create(
-            client_id=config('GITHUB_CLIENT_ID'),
-            secret=config('GITHUB_CLIENT_SECRET'),
             name=config('PROJECT_NAME', default='lend').title(),
             provider='github',
         )[0]
@@ -26,4 +24,7 @@ class Command(BaseCommand):
                 name=config('SITE_NAME', default='example.com')
             )[0]
         )
+        social_app.client_id = config('GITHUB_CLIENT_ID')
+        social_app.secret = config('GITHUB_CLIENT_SECRET')
+        social_app.save()
         print('GitHub OAuth Successfully configurated.')

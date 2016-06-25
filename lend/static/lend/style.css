@@ -19,6 +19,12 @@ a:hover {
     height: 500px;
 }
 
+
+.btn.btn-default.btn-raised {
+    background-color: #4CAF50;
+    color: #fff;
+}
+
 .navbar .navbar-nav > .active > a:hover {
   color: inherit;
   background-color: inherit;
@@ -151,4 +157,9 @@ label.radio-inline input[type=radio]:checked ~ .check {
 .radio input[type=radio]:checked ~ .circle,
 label.radio-inline input[type=radio]:checked ~ .circle {
   border-color: #4CAF50;
+}
+
+.error {
+    color: #F44336;
+    font-size: 9pt;
 }

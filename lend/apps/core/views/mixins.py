@@ -19,7 +19,8 @@ class OwnershipRequiredMixin(object):
 
     def get_object(self):
         self.object = get_object_or_404(
-            self.model.objects.filter(created_by=self.request.user),
+            self.model.objects.filter(
+                created_by=self.request.user).activated(),
             pk=self.kwargs[self.pk_url_kwarg]
         )
         return self.object

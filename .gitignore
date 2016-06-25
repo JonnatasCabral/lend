@@ -55,6 +55,7 @@ coverage.xml
 *.sqlite3
 **/migrations/**
 !**/migrations/__init__.py
+media/
 
 # Sphinx documentation
 docs/_build/
