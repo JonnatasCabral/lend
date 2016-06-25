@@ -8,6 +8,8 @@ class Container(LendModel):
 
     name = models.CharField(max_length=255, null=True, blank=True)
     cid = models.CharField(max_length=255, null=True, blank=True)
+    title = models.CharField(max_length=255, null=True, blank=True)
+    description = models.CharField(max_length=255, null=True, blank=True)
 
     def __unicode__(self):
         return '%s, created_by=%s' % (self.name or self.cid, self.created_by)

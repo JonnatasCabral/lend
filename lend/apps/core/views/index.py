@@ -10,14 +10,10 @@ from django.contrib.auth import logout
 class IndexView(TemplateView):
     template_name = 'core/index.html'
 
-
-class LoginView(TemplateView):
-    template_name = 'core/login.html'
-
     def dispatch(self, request, *args, **kwargs):
-        if request.user.is_authenticated:
-            return HttpResponseRedirect(reverse('index'))
-        return super(LoginView, self).dispatch(request, *args, **kwargs)
+        if request.user.is_authenticated():
+            return HttpResponseRedirect(reverse('client:containers'))
+        return super(IndexView, self).dispatch(request, *args, **kwargs)
 
 
 class LogoutView(RedirectView):
@@ -31,5 +27,4 @@ class LogoutView(RedirectView):
 
 
 index_view = IndexView.as_view()
-login_view = LoginView.as_view()
 logout_view = LogoutView.as_view()

@@ -53,7 +53,7 @@ INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_APPS
 SITE_ID = 1
 
 LOGIN_REDIRECT_URL = reverse_lazy('index')
-LOGIN_URL = reverse_lazy('login')
+LOGIN_URL = reverse_lazy('index')
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -112,7 +112,10 @@ STATIC_ROOT = config('STATIC_ROOT', default=BASE_DIR.child('staticfiles'))
 
 STATIC_URL = config('STATIC_URL', default='/static/')
 
-STATICFILES_DIRS = (BASE_DIR.child('static'), )
+STATICFILES_DIRS = (
+    BASE_DIR.child('static'),
+    BASE_DIR.child('static').child('bower_components')
+)
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

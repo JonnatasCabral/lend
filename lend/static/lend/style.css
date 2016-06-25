@@ -1,0 +1,89 @@
+@import url(https://fonts.googleapis.com/css?family=Cutive+Mono|Comfortaa:700|Open+Sans:400,600,700&subset=latin,latin-ext);
+
+body {
+    font-family: 'Open Sans', sans-serif;
+    font-size: 12.5pt;
+    color: #fff;
+}
+
+a {
+    color: #4CAF50;
+}
+
+a:hover {
+    color: #fff;
+}
+
+.navbar .navbar-nav > .active > a:hover {
+  color: inherit;
+  background-color: inherit;
+}
+
+.navbar.navbar-default {
+    color: #4CAF50;
+    background-color:  #fff;
+}
+
+.navbar.navbar-default .navbar-brand {
+    font-weight: 700;
+}
+
+.navbar .navbar-nav > li {
+    min-width: 100px;
+    text-align: center;
+}
+
+.pull-bottom-right {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding-right: 3%;
+    padding-bottom: 3%;
+}
+
+.full-background {
+    background-color: #4CAF50;
+}
+
+.page-title {
+    font-family: 'Comfortaa';
+    color: #fff;
+    font-size: 50pt;
+}
+
+.container {
+    margin-top: 50px;
+}
+
+.col-centered {
+    float: none;
+    margin: 0 auto;
+}
+
+.card-panel {
+    margin-top: 30px;
+    color: #4CAF50;
+}
+
+.user-container .panel-heading {
+    background-color: #fff;
+    color: #4CAF50;
+    font-weight: 700;
+    padding: 20px;
+}
+
+.truncate {
+    max-width: 100%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow:hidden;
+}
+
+.truncate-height {
+    white-space: break-word;
+    overflow:hidden;
+}
+
+.btn.btn-default.btn-fab {
+    color: #4CAF50;
+}
