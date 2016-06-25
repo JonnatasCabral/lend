@@ -4,7 +4,8 @@ MAINTAINER Jonnatas Matias <matiasjonnatas@gmail.com>
 
 EXPOSE 8000
 
-VOLUME /data
+WORKDIR /home/codes/
 
-CMD ["/bin/sh"]
+VOLUME /tmp/codes/:/home/codes/
 
+CMD ["/bin/bash"]
