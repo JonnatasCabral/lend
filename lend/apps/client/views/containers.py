@@ -77,10 +77,11 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
 
         docker = Docker(dockerfile)
         docker_container = docker.container
-        if not docker.cli.containers():
-            container_up = docker.container_up(docker_container, dir=container_django.pk)
-        else:
-            container_up = docker.cli.containers()[0]["Id"]
+        container_up = docker.container_up(docker_container, dir=container_django.pk)
+        # if not docker.cli.containers():
+        #     container_up = docker.container_up(docker_container, dir=container_django.pk)
+        # else:
+        #     container_up = docker.cli.containers()[0]["Id"]
         command='python {0}.py'.format(container_django.title)
         result = docker.container_run_command(container_up, command=command)
         return result
@@ -162,7 +163,7 @@ class CreateContainerView(LoginRequiredMixin, FormView):
                 created_by=self.request.user,
                 container=container
             )
-        create_and_run_container(container.pk)
+        # create_and_run_container(container.pk)
         return form_valid
 
     def get_success_url(self):
