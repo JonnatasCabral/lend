@@ -1,0 +1,5 @@
+**/security
+**/pid
+**/log
+**/db
+**/history.sqlite

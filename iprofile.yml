@@ -1,0 +1,5 @@
+settings:
+    active: lend
+    django: lend.settings
+    last: lend
+    path: lend/iprofiles

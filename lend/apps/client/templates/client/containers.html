@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block content %}
+{% include 'includes/navbar.html' %}
+<div class="container card-panel">
+    {% for container in object_list %}
+    <div class="col-lg-4 text-left">
+        <div class="user-container panel panel-default">
+            <div class="panel-heading truncate">
+                <div class="col-lg-10">
+                {{ container.title }}
+                </div>
+                <div class="text-center pull-right col-lg-2">
+                    <a href="{% url 'client:editor' container.pk %}">
+                        <i class="material-icons">mode_edit</i>
+                    </a>
+                    <a href="{% url 'client:delete_container' container.pk %}">
+                        <i class="material-icons">delete</i>
+                    </a>
+                </div>
+            </div>
+            <div class="panel-body truncate" style="height:50px; font-size:10.5pt;">
+                {{ container.description }}
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-lg-6 col-centered text-center">
+        <div class="user-container panel panel-default">
+            <div class="panel-body truncate">
+                You have no Containers.<br>
+                Create one by clicking on the button bellow.
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+<div class="pull-bottom-right">
+    <a class="btn btn-default btn-fab" href="{% url 'client:create_container'%}">
+        <i class="material-icons">add_circle</i>
+    </a>
+</div>
+{% endblock content %}

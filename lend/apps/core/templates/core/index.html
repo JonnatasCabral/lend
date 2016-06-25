@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    {% include 'includes/title.html' %}
+    <div class="card-panel col-lg-6 text-center col-centered">
+        <div class="panel panel-default">
+            <div class="panel-body">
+                To start, please login/signup here:
+            </div>
+            <div class="panel-bottom">
+                <a href="{% url 'github_login' %}" class="btn btn-success btn-raised btn-lg">
+                    <i class="fa fa-github"></i> Login with GitHub
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock content %}

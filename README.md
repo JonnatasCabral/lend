@@ -1,8 +1,13 @@
-# lend
+# Lend
 
 ### Dependencies
-  * Python 2.7.11
+  * Python (2.7.11)
   * Django (1.9.6)
   * Docker
-  * NodeJs
   * Bower
+
+### Running
+  * bower install
+  * pip install -r requirements.txt
+  * make new
+  * make serve
