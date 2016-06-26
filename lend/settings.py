@@ -45,7 +45,10 @@ LOCAL_APPS = [
     'client'
 ]
 
-THIRD_APPS = []
+THIRD_APPS = [
+	'bootstrap3'
+
+]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_APPS
 

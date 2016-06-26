@@ -6,8 +6,34 @@
 		<link href='https://fonts.googleapis.com/css?family=Varela+Round' rel='stylesheet' type='text/css'>
 		<link rel="stylesheet" href="{% static "css/normalize.css" %}">
 		<link rel="stylesheet" href="{% static "css/style.css" %}">
-		<link rel="stylesheet" type="text/css" href="{% static "bower_components/semantic/dist/semantic.min.css" %}">
-		<script src="{% static "bower_components/semantic/dist/semantic.min.js" %}"></script>
+    <link rel="stylesheet" href="{% static "css/bootstrap-tokenfield.css" %}">
+    <link rel="stylesheet" href="{% static "css/bootstrap-tokenfield.min.css" %}">
+    <link rel="stylesheet" href="{% static "css/tokenfield-typeahead.css" %}">
+    <link rel="stylesheet" href="{% static "css/tokenfield-typeahead.min.css" %}">
+    <script
+        src="https://code.jquery.com/jquery-2.1.4.js"
+        integrity="sha256-siFczlgw4jULnUICcdm9gjQPZkw/YPDqhQ9+nAOScE4="
+        crossorigin="anonymous"></script>
+        <script  src="{% static "css/jquery-ui.min.js" %}"></script>
+     <script  src="{% static "css/bootstrap-tokenfield.js" %}"></script>
+     <script  src="{% static "css/bootstrap-tokenfield.min.js" %}"></script>
+
+
+    
+
+        <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" integrity="sha384-fLW2N01lMqjakBkx3l/M9EahuwpSfeNvV63J5ezn3uZzapT0u7EYsXMjQV+0En5r" crossorigin="anonymous">
+
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha384-0mSbJDEHialfmuBBQP6A4Qrprq5OVfW37PRR3j5ELqxss1yVqOtnepnHVP9aJ7xS" crossorigin="anonymous"></script>
+     <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap-wizard/1.2/jquery.bootstrap.wizard.js"></script>
+   
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     {% block extra_css %}{% endblock extra_css %}
 
 	</head>
@@ -102,37 +128,8 @@
 
   </style>
 
-  <script src="assets/library/jquery.min.js"></script>
-  <script src="../dist/components/visibility.js"></script>
-  <script src="../dist/components/sidebar.js"></script>
-  <script src="../dist/components/transition.js"></script>
-  <script>
-  $(document)
-    .ready(function() {
 
-      // fix menu when passed
-      $('.masthead')
-        .visibility({
-          once: false,
-          onBottomPassed: function() {
-            $('.fixed.menu').transition('fade in');
-          },
-          onBottomPassedReverse: function() {
-            $('.fixed.menu').transition('fade out');
-          }
-        })
-      ;
 
-      // create sidebar and attach to menu open
-      $('.ui.sidebar')
-        .sidebar('attach events', '.toc.item')
-      ;
-
-    })
-  ;
-  </script>
-</head>
-<body>
 
 {% block content %}
 
