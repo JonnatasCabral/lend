@@ -6,7 +6,7 @@
 
 {% block form %}
 <div class="col-lg-12">
-    {% if not object.running and result %}
+    {% if not object.running %}
     <div class="alert result-panel well bs-component" id='result-panel'>
         {% if object.stopped %}LAST RESULT{% else %}STATUS: <span class="green">STOPPING CONTAINER</span>{% endif %}
         <button type="button" class="close" id='dismiss-result'>×</button>
