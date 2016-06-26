@@ -8,7 +8,7 @@
 <div class="col-lg-12">
     {% if not object.running and result %}
     <div class="alert result-panel well bs-component" id='result-panel'>
-        LAST RESULT
+        {% if object.stopped %}LAST RESULT{% else %}STATUS: <span class="green">STOPPING CONTAINER</span>{% endif %}
         <button type="button" class="close" id='dismiss-result'>×</button>
         <div class="form-group">
             <div class="col-lg-12 col-centered">
@@ -54,7 +54,7 @@
 </div>
 <br>
 <div class="row">
-    <button type="button" class="btn btn-default btn-fab" id="submit">
+    <button type="button" class="btn btn-default btn-fab" {% if object.stopped %}id="submit"{% else %}disabled{% endif %}>
         <i class="material-icons">send</i>
     </button>
 </div>

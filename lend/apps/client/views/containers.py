@@ -25,6 +25,7 @@ class RunMixin(object):
     def run_code_in_container(self, container_model, **options):
         docker_container = self.get_or_create_container(container_model)
         container_model.running = True
+        container_model.stopped = False
         container_model.step_resting()
         run_command_in_container.delay(docker_container, **options)
 

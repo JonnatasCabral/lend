@@ -34,6 +34,8 @@ def run_command_in_container(container, **options):
 
     container_model.step_finished()
     stop_container.delay(container)
+    container_model.running = False
+    container_model.save()
 
 
 @celery.task
@@ -51,5 +53,5 @@ def stop_container(container):
     container_model = Container.objects.get(cid=container['Id'])
     if container_model.cid:
         docker.container_down(container)
-    container_model.running = False
+    container_model.stopped = True
     container_model.save()

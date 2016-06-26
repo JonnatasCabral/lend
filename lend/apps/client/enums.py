@@ -10,9 +10,9 @@ class RunningSteps(object):
 
 
 RUNNING_STEPS_CHOICES = (
-    (RunningSteps.IDLE, 'Starting up.'),
-    (RunningSteps.DATA, 'Loading CSV data file.'),
-    (RunningSteps.REQUIREMENTS, 'Installing requirements.'),
-    (RunningSteps.CODE, 'Running your code.'),
-    (RunningSteps.FINISHED, 'Finished, please reload.'),
+    (RunningSteps.IDLE, 'Starting up'),
+    (RunningSteps.DATA, 'Loading CSV data file'),
+    (RunningSteps.REQUIREMENTS, 'Installing requirements'),
+    (RunningSteps.CODE, 'Running your code'),
+    (RunningSteps.FINISHED, 'Finished, please reload'),
 )

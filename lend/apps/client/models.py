@@ -16,6 +16,7 @@ class Container(LendModel):
     title = models.CharField(max_length=255, null=True, blank=True)
     description = models.CharField(max_length=255, null=True, blank=True)
     running = models.BooleanField(default=False)
+    stopped = models.BooleanField(default=True)
     running_step = models.PositiveIntegerField(
         default=RunningSteps.IDLE,
         choices=RUNNING_STEPS_CHOICES
