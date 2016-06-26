@@ -86,6 +86,8 @@ $('#submit').click(function() {
                         <div class="col-lg-12 monospaced">
                             {{ form.requirements }}
                         </div>
+                        {% block req-check %}
+                        {% endblock req-check %}
                         {% if form.requirements.errors %}
                             <div class="col-lg-12 error">
                                 {{ form.requirements.errors.0 }}

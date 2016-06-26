@@ -22,11 +22,11 @@ import os
 
 class RunMixin(object):
 
-    def run_code_in_container(self, container_model):
+    def run_code_in_container(self, container_model, **options):
         docker_container = self.get_or_create_container(container_model)
         container_model.running = True
         container_model.step_resting()
-        run_command_in_container.delay(docker_container)
+        run_command_in_container.delay(docker_container, **options)
 
     def set_code_file(self, container, code):
         media = code.get_directory()
@@ -125,7 +125,7 @@ class CodeEditorView(
         container.title = form.cleaned_data['title']
         container.description = form.cleaned_data.get('description')
         container.save()
-
+        keep_requirements = form.cleaned_data.get('keep_requirements', False)
         code = UploadedCode.objects.filter(container=container).latest('pk')
         if form.cleaned_data.get('code', '').strip() != code.content.strip():
             code = UploadedCode.objects.create(
@@ -153,7 +153,10 @@ class CodeEditorView(
                 )
 
         self.set_code_file(container, code)
-        self.run_code_in_container(container)
+        self.run_code_in_container(
+            container,
+            keep_requirements=keep_requirements
+        )
         return form_valid
 
     def get_success_url(self):

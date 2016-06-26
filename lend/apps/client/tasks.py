@@ -3,31 +3,37 @@
 from client.models import Container
 from core.utils import docker
 import celery
+import functools
 
 
 @celery.task
-def run_command_in_container(container):
+def run_command_in_container(container, **options):
     container_model = Container.objects.get(cid=container['Id'])
     code = container_model.get_code()
     container_up = docker.container_up(
         container, directory=code.get_directory())
     command = 'python {}.py'.format(container_model.title)
-    pip_install = 'pip install -r requirements.txt'
+    run = functools.partial(docker.container_run_command, container_up)
 
+    pip_install = 'pip install -r requirements.txt'
     container_model.step_loading_csv()
     # TODO load CSV data
 
     container_model.step_requirements()
-    docker.container_run_command(container_up, command=pip_install)
+    if not options.get('keep_requirements', False):
+        pip_uninstall = (
+            '/bin/sh -c "pip freeze > uninstall.txt" &&'
+            ' pip uninstall -r uninstall.txt -y && rm uninstall.txt'
+        )
+        run(command=pip_uninstall)
+    run(command=pip_install)
 
     container_model.step_running_code()
-    code.result = docker.container_run_command(container_up, command=command)
+    code.result = run(command=command)
     code.save()
 
     container_model.step_finished()
     stop_container.delay(container)
-    container_model.running = False
-    container_model.save()
 
 
 @celery.task

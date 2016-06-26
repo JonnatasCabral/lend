@@ -67,6 +67,8 @@ class CreateContainerForm(forms.Form):
 
 class EditContainerForm(CreateContainerForm):
 
+    keep_requirements = forms.BooleanField(required=False)
+
     def __init__(self, *args, **kwargs):
         self.instance = kwargs.pop('instance', None)
         super(EditContainerForm, self).__init__(*args, **kwargs)

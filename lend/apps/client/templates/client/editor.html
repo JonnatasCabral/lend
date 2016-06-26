@@ -25,6 +25,14 @@
 {{ block.super }}
 {% endblock form %}
 
+{% block req-check %}
+<div class="checkbox col-lg-12">
+    <label style="color:#272822;">
+        <input type="checkbox" name="keep_requirements" id="id_keep_requirements"> Keep previous requirements
+    </label>
+</div>
+{% endblock req-check %}
+
 {% block btn-bottom-right %}
 {% if object.running %}
 <div class="row">
