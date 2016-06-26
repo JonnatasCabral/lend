@@ -33,10 +33,13 @@ $('#submit').click(function() {
 </div>
 {% block container %}
 <div class="container">
+    {% block page-title %}
     {% include 'includes/title.html' with text='Create a New Container' %}
+    {% endblock page-title %}
     <div class="col-lg-10 col-centered">
         <form class="form-horizontal" method="POST" enctype="multipart/form-data">
             {% csrf_token %}
+            {% block form %}
             <div class="col-lg-5">
                 <div class="well bs-component">
                     <div class="form-group {% if form.title.errors %}has-error{% endif %}">
@@ -112,7 +115,10 @@ $('#submit').click(function() {
                 </div>
             </div>
             <button type="submit" class="hidden" id="submit_hidden"></button>
+            {% endblock form %}
         </form>
+        {% block after-form %}
+        {% endblock after-form %}
     </div>
 </div>
 {% endblock container %}

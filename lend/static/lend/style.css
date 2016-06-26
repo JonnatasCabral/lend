@@ -74,6 +74,23 @@ a:hover {
     font-size: 50pt;
 }
 
+.result-panel {
+    color: #272822;
+}
+
+.result {
+    height: 200px;
+    padding: 10px;
+    font-size: 11pt;
+    color: #fff;
+    background-color: #272822;
+    overflow-y: scroll;
+}
+
+.green {
+    color: #59B75C;
+}
+
 .container {
     margin-top: 50px;
 }

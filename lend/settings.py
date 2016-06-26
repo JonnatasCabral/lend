@@ -46,6 +46,7 @@ THIRD_APPS = [
     'allauth.account',
     'allauth.socialaccount',
     'allauth.socialaccount.providers.github',
+    'djcelery',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_APPS
@@ -125,3 +126,5 @@ STATICFILES_FINDERS = (
 MEDIA_ROOT = config('MEDIA_ROOT', default=BASE_DIR.child('media'))
 
 MEDIA_URL = config('MEDIA_URL', default='/media/')
+
+BROKER_URL = config('BROKER_URL')

@@ -1,24 +1,55 @@
 # -*- coding: utf-8 -*-
 
-import os
+from client.enums import RUNNING_STEPS_CHOICES
 from client.forms import CreateContainerForm
 from client.forms import EditContainerForm
+from client.forms import StopContainerForm
 from client.models import Container
 from client.models import CSVFile
 from client.models import UploadedCode
-from client.tasks import create_and_run_container
-from client.tasks import run_container
+from client.tasks import run_command_in_container
+from client.tasks import stop_and_remove_container
+from client.tasks import stop_container
 from core.utils import docker
 from core.views import LoginRequiredMixin
 from core.views import OwnershipRequiredMixin
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect
 from django.views.generic import FormView
 from django.views.generic import ListView
-from django.views.generic import DetailView
 from django.views.generic import RedirectView
-from core.constants import dockerfile
-from core.utils import Docker
+import os
+
+
+class RunMixin(object):
+
+    def run_code_in_container(self, container_model):
+        docker_container = self.get_or_create_container(container_model)
+        container_model.running = True
+        container_model.step_resting()
+        run_command_in_container.delay(docker_container)
+
+    def set_code_file(self, container, code):
+        media = code.get_directory()
+        if not os.path.exists(media):
+            os.makedirs(media)
+
+        filepath = os.path.join(media, '{}.py'.format(container.title))
+        requirements = os.path.join(media, 'requirements.txt')
+
+        with open(filepath, 'wb') as codefile:
+            codefile.write(code.content)
+        with open(requirements, 'wb') as reqfile:
+            reqfile.write(code.requirements)
+
+    def get_or_create_container(self, container):
+        if not container.cid:
+            container_data = docker.cli.inspect_container(
+                docker.container_create())
+            container.cid = container_data['Id']
+            container.name = container_data['Name'].strip('/')
+            container.save()
+        return container.get_object()
+
 
 class ContainerMixin(object):
     model = Container
@@ -34,27 +65,42 @@ class ContainersListView(LoginRequiredMixin, ListView):
             **kwargs).filter(created_by=self.request.user).activated()
 
 
-class RunningContainerView(ContainerMixin, OwnershipRequiredMixin, DetailView):
+class StopContainerView(ContainerMixin, OwnershipRequiredMixin, FormView):
     template_name = 'client/running.html'
+    form_class = StopContainerForm
+
+    def form_valid(self, form):
+        form_valid = super(StopContainerView, self).form_valid(form)
+        container = self.get_object()
+        stop_container(container.get_object())
+        return form_valid
+
+    def get_success_url(self):
+        return reverse('client:editor', args=[self.get_object().pk])
 
 
-class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
+class CodeEditorView(
+        RunMixin, ContainerMixin, OwnershipRequiredMixin, FormView):
     template_name = 'client/editor.html'
     form_class = EditContainerForm
 
+    def get_form_kwargs(self):
+        kwargs = super(CodeEditorView, self).get_form_kwargs()
+        kwargs.update({
+            'user': self.request.user,
+            'instance': self.get_object()
+        })
+        return kwargs
+
     def get_context_data(self, **kwargs):
         context = super(CodeEditorView, self).get_context_data(**kwargs)
-        context['object'] = self.object
+        context.update({
+            'object': self.get_object(),
+            'result': self.get_object().get_code().result,
+            'actual_step': dict(RUNNING_STEPS_CHOICES)[
+                self.get_object().running_step]
+        })
         return context
-
-    # def get(self, request, *args, **kwargs):
-    #     container = self.get_object()
-    #     is_running = docker.cli.inspect_container(
-    #         container.get_object())['State']['Running']
-    #     if is_running:
-    #         return HttpResponseRedirect(reverse(
-    #             'client:running_container', args=[container.pk]))
-    #     return super(CodeEditorView, self).get(request, *args, **kwargs)
 
     def get_initial(self):
         initial = super(CodeEditorView, self).get_initial()
@@ -64,7 +110,7 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
                 'pk').content.file
         except CSVFile.DoesNotExist:
             pass
-        code = container.uploadedcode_set.latest('pk')
+        code = container.get_code()
         initial.update({
             'title': container.title,
             'description': container.description,
@@ -72,29 +118,6 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
             'requirements': code.requirements
         })
         return initial
-
-    def run_code_in_container(self, container_django):
-
-        docker = Docker(dockerfile)
-        docker_container = docker.container
-        container_up = docker.container_up(docker_container, dir=container_django.pk)
-        # if not docker.cli.containers():
-        #     container_up = docker.container_up(docker_container, dir=container_django.pk)
-        # else:
-        #     container_up = docker.cli.containers()[0]["Id"]
-        command='python {0}.py'.format(container_django.title)
-        result = docker.container_run_command(container_up, command=command)
-        return result
-
-    def set_file(self, container, code):
-
-        if not os.path.exists('/tmp/{0}'.format(container.pk)):
-            os.makedirs('/tmp/{0}'.format(container.pk))
-        file = open('/tmp/{0}/{1}.py'.format(
-            container.pk,
-            container.title), 'w')
-        file.write(code)
-        file.close()
 
     def form_valid(self, form):
         form_valid = super(CodeEditorView, self).form_valid(form)
@@ -105,16 +128,21 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
 
         code = UploadedCode.objects.filter(container=container).latest('pk')
         if form.cleaned_data.get('code', '').strip() != code.content.strip():
-            uploaded_code = UploadedCode.objects.create(
+            code = UploadedCode.objects.create(
                 created_by=self.request.user,
                 requirements=form.cleaned_data.get('requirements'),
                 container=container,
                 content=form.cleaned_data.get('code')
             )
+        else:
+            code.requirements = form.cleaned_data.get('requirements')
+            code.save()
+
         if form.cleaned_data.get('csv_file'):
             file_obj = form.cleaned_data.get('csv_file')
             csv_files = CSVFile.objects.filter(
                     container=container)
+
             if csv_files.exists() and csv_files.latest(
                     'pk').content.file.name != file_obj.name or (
                         not csv_files.exists()):
@@ -123,16 +151,16 @@ class CodeEditorView(ContainerMixin, OwnershipRequiredMixin, FormView):
                     created_by=self.request.user,
                     container=container
                 )
-        self.set_file(container, form.cleaned_data.get('code'))
-        container.result = self.run_code_in_container(container)
-        container.save()
+
+        self.set_code_file(container, code)
+        self.run_code_in_container(container)
         return form_valid
 
     def get_success_url(self):
         return reverse('client:editor', args=[self.get_object().pk])
 
 
-class CreateContainerView(LoginRequiredMixin, FormView):
+class CreateContainerView(RunMixin, LoginRequiredMixin, FormView):
     template_name = 'client/new.html'
     model = Container
     form_class = CreateContainerForm
@@ -151,7 +179,7 @@ class CreateContainerView(LoginRequiredMixin, FormView):
             description=form.cleaned_data.get('description'),
             created_by=self.request.user
         )
-        UploadedCode.objects.create(
+        code = UploadedCode.objects.create(
             created_by=self.request.user,
             requirements=form.cleaned_data.get('requirements'),
             container=container,
@@ -163,7 +191,8 @@ class CreateContainerView(LoginRequiredMixin, FormView):
                 created_by=self.request.user,
                 container=container
             )
-        # create_and_run_container(container.pk)
+        self.set_code_file(container, code)
+        self.run_code_in_container(container)
         return form_valid
 
     def get_success_url(self):
@@ -176,7 +205,7 @@ class DeleteContainerView(
     def get(self, request, *args, **kwargs):
         container = self.get_object()
         container.deactivate()
-        docker.container_rm(container.get_object())
+        stop_and_remove_container.delay(container.get_object())
         return super(DeleteContainerView, self).get(request, *args, **kwargs)
 
     def get_redirect_url(self, **kwargs):
@@ -187,4 +216,4 @@ code_editor_view = CodeEditorView.as_view()
 containers_view = ContainersListView.as_view()
 create_container_view = CreateContainerView.as_view()
 delete_container_view = DeleteContainerView.as_view()
-running_container_view = RunningContainerView.as_view()
+stop_container_view = StopContainerView.as_view()

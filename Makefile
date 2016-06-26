@@ -35,3 +35,12 @@ static:
 new: migrations migrate super oauth
 
 sync: migrations migrate oauth
+
+celery:
+	@python manage.py celery worker --loglevel=INFO
+
+celery.purge:
+	@echo "from celery.task.control import discard_all; discard_all()" | python manage.py shell
+
+celery.kill:
+	@kill `ps -ef | grep "celery" | awk '{print $$2}'`

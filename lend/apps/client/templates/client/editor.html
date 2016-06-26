@@ -1,94 +1,90 @@
 {% extends 'client/new.html' %}
 
-{% block container %}
-<div class="container">
-    {% include 'includes/title.html' with text='Python Lend' %}
-    <div class="col-lg-10 col-centered">
-        <form class="form-horizontal" method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            <div class="col-lg-5">
-                <div class="well bs-component">
-                    <div class="form-group {% if form.title.errors %}has-error{% endif %}">
-                        <div class="col-lg-11">
-                            {{ form.title }}
-                        </div>
-                        {% if form.title.errors %}
-                        <div class="col-lg-12 error">
-                            {{ form.title.errors.0 }}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-7">
-                <div class="well bs-component">
-                    <div class="form-group {% if form.description.errors %}has-error{% endif %}">
-                        <div class="col-lg-12">
-                            {{ form.description }}
-                        </div>
-                        {% if form.description.errors %}
-                        <div class="col-lg-12 error">
-                            {{ form.description.errors.0 }}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <div class="col-lg-12">
-                <div class="well bs-component">
-                    <pre id="editor">{{ form.code.value|default:'# Paste your code here.' }}</pre>
-                    <textarea type="text" class="hidden" id="code" name="code">
-                    </textarea>
-                    {% if form.code.errors %}
-                    <div class="alert alert-dismissible alert-danger">
-                        <button type="button" class="close" data-dismiss="alert">×</button>
-                        {{ form.code.errors.0 }}
-                    </div>
-                    {% endif %}
-                </div>
-            </div>
-            <div class="col-lg-6">
-                <div class="well bs-component">
-                    <div class="form-group {% if form.requirements.errors %}has-error{% endif %}">
-                        <div class="col-lg-12 monospaced">
-                            {{ form.requirements }}
+{% block page-title %}
+{% include 'includes/title.html' with text='Python Lend' %}
+{% endblock page-title %}
 
-                        </div>
-                        {% if form.requirements.errors %}
-                        <div class="col-lg-12 error">
-                            {{ form.requirements.errors.0 }}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
+{% block form %}
+<div class="col-lg-12">
+    {% if not object.running and result %}
+    <div class="alert result-panel well bs-component" id='result-panel'>
+        LAST RESULT
+        <button type="button" class="close" id='dismiss-result'>×</button>
+        <div class="form-group">
+            <div class="col-lg-12 col-centered">
+                <pre class="result">{{ result }}</pre>
             </div>
-            <div class="col-lg-6">
-                <div class="well bs-component">
-                    <div class="form-group {% if form.csv_file.errors %}has-error{% endif %}">
-                        <div class="col-lg-12 col-centered">
-                            <input id="file" class="form-control" disabled placeholder="CSV Data File" type="text" value="{{ form.csv_file.value }}">
-                            <label class="btn btn-default btn-raised">
-                                Upload <input type="file" style="display: none;" id="csv_file" name="csv_file" value="{{ form.csv_file.value }}">
-                            </label>
-                            <a href="javascript:void();" id="clear_file" class="pull-right btn btn-default btn-raised">
-                                Clear 
-                            </a>
-                        </div>
-                        {% if form.csv_file.errors %}
-                        <div class="col-lg-12 error">
-                            {{ form.csv_file.errors.0 }}
-                        </div>
-                        {% endif %}
-                    </div>
-                </div>
-            </div>
-            <button type="submit" class="hidden" id="submit_hidden"></button>
-        </form>
+        </div>
     </div>
+    {% else %}
+    <div class="alert result-panel well bs-component" id='result-panel'>
+        STATUS: <span class="green">{{ actual_step|upper }}</span>
+    </div>
+    {% endif %}
 </div>
-{{object.result}}
-{% endblock container %}
+{{ block.super }}
+{% endblock form %}
 
 {% block btn-bottom-right %}
-{{ block.super }}
+{% if object.running %}
+<div class="row">
+    <button type="button" class="btn btn-default btn-fab" id="refresh">
+        <i class="material-icons">update</i>
+    </button>
+</div>
+<br>
+<div class="row">
+    <button type="button" class="btn btn-default btn-fab" id="stop-container">
+        <i class="material-icons">stop</i>
+    </button>
+</div>
+{% else %}
+<div class="row">
+    <button type="button" class="btn btn-default btn-fab" id="result">
+        <i class="material-icons">library_books</i>
+    </button>
+</div>
+<br>
+<div class="row">
+    <button type="button" class="btn btn-default btn-fab" id="submit">
+        <i class="material-icons">send</i>
+    </button>
+</div>
+{% endif %}
 {% endblock btn-bottom-right %}
+
+{% block scripts %}
+{{ block.super }}
+<script>
+$('#result').click(function() {
+    var panel = $('#result-panel');
+    if (panel.is(':hidden')) {
+        panel.show();
+    } else {
+        panel.hide();
+    }
+})
+$('#dismiss-result').click(function() {
+    var panel = $('#result-panel');
+    panel.hide();
+})
+$('#refresh').click(function() {
+    location.reload();
+})
+$('#stop-container').click(function() {
+    var url = "{% url 'client:stop_container' object.pk %}";
+    $.ajax({
+        type: "POST",
+        url: url,
+        data: {
+            container_id: "{{ object.pk }}",
+            csrfmiddlewaretoken: $('input[name="csrfmiddlewaretoken"]').val()
+        },
+        success: function(data)
+        {
+            location.reload();
+        }
+    });
+});
+</script>
+{% endblock scripts %}
