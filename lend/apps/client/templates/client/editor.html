@@ -34,13 +34,15 @@
 {% endblock req-check %}
 
 {% block btn-bottom-right %}
-{% if object.running %}
+{% if object.running or not object.stopped %}
 <div class="row">
     <button type="button" class="btn btn-default btn-fab" id="refresh">
         <i class="material-icons">update</i>
     </button>
 </div>
 <br>
+{% endif %}
+{% if object.running %}
 <div class="row">
     <button type="button" class="btn btn-default btn-fab" id="stop-container">
         <i class="material-icons">stop</i>

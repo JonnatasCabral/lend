@@ -14,6 +14,7 @@ from core.utils import docker
 from core.views import LoginRequiredMixin
 from core.views import OwnershipRequiredMixin
 from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView
 from django.views.generic import ListView
 from django.views.generic import RedirectView
@@ -35,12 +36,12 @@ class RunMixin(object):
             os.makedirs(media)
 
         filepath = os.path.join(media, '{}.py'.format(container.title))
-        requirements = os.path.join(media, 'requirements.txt')
-
+        if code.requirements:
+            requirements = os.path.join(media, 'requirements.txt')
+            with open(requirements, 'wb') as reqfile:
+                reqfile.write(code.requirements)
         with open(filepath, 'wb') as codefile:
             codefile.write(code.content)
-        with open(requirements, 'wb') as reqfile:
-            reqfile.write(code.requirements)
 
     def get_or_create_container(self, container):
         if not container.cid:
@@ -177,8 +178,7 @@ class CreateContainerView(RunMixin, LoginRequiredMixin, FormView):
         return kwargs
 
     def form_valid(self, form):
-        form_valid = super(CreateContainerView, self).form_valid(form)
-        container = Container.objects.create(
+        self.container = Container.objects.create(
             title=form.cleaned_data.get('title'),
             description=form.cleaned_data.get('description'),
             created_by=self.request.user
@@ -186,21 +186,21 @@ class CreateContainerView(RunMixin, LoginRequiredMixin, FormView):
         code = UploadedCode.objects.create(
             created_by=self.request.user,
             requirements=form.cleaned_data.get('requirements'),
-            container=container,
+            container=self.container,
             content=form.cleaned_data.get('code')
         )
         if form.cleaned_data.get('csv_file'):
             CSVFile.objects.create(
                 content=form.cleaned_data['csv_file'],
                 created_by=self.request.user,
-                container=container
+                container=self.container
             )
-        self.set_code_file(container, code)
-        self.run_code_in_container(container)
-        return form_valid
+        self.set_code_file(self.container, code)
+        self.run_code_in_container(self.container)
+        return super(CreateContainerView, self).form_valid(form)
 
     def get_success_url(self):
-        return reverse('index')
+        return reverse('client:editor', args=[self.container.id])
 
 
 class DeleteContainerView(
