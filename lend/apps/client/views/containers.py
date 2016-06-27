@@ -16,10 +16,10 @@ from core.views import LoginRequiredMixin
 from core.views import OwnershipRequiredMixin
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.views.generic import View
 from django.views.generic import FormView
 from django.views.generic import ListView
 from django.views.generic import RedirectView
+from django.views.generic import View
 
 
 class ContainersListView(LoginRequiredMixin, ListView):
@@ -69,11 +69,9 @@ class CodeEditorView(
     def get_initial(self):
         initial = super(CodeEditorView, self).get_initial()
         container = self.get_object()
-        try:
-            initial['csv_file'] = container.csvfile_set.latest(
-                'pk').content.file
-        except CSVFile.DoesNotExist:
-            pass
+        data_file = container.get_csv_file()
+        if data_file:
+            initial['csv_file'] = data_file.content.file
         code = container.get_code()
         initial.update({
             'title': container.title,
@@ -90,8 +88,10 @@ class CodeEditorView(
         container.description = form.cleaned_data.get('description')
         container.save()
         keep_requirements = form.cleaned_data.get('keep_requirements', False)
-        code = UploadedCode.objects.filter(container=container).latest('pk')
-        if form.cleaned_data.get('code', '').strip() != code.content.strip():
+        init_code = UploadedCode.objects.filter(
+            container=container).latest('pk')
+        if form.cleaned_data.get(
+                'code', '').strip() != init_code.content.strip():
             code = UploadedCode.objects.create(
                 created_by=self.request.user,
                 requirements=form.cleaned_data.get('requirements'),
@@ -99,13 +99,13 @@ class CodeEditorView(
                 content=form.cleaned_data.get('code')
             )
         else:
+            code = init_code
             code.requirements = form.cleaned_data.get('requirements')
             code.save()
 
         if form.cleaned_data.get('csv_file'):
             file_obj = form.cleaned_data.get('csv_file')
-            csv_files = CSVFile.objects.filter(
-                    container=container)
+            csv_files = CSVFile.objects.filter(container=container)
 
             if csv_files.exists() and csv_files.latest(
                     'pk').content.file.name != file_obj.name or (

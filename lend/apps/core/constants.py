@@ -2,13 +2,17 @@
 
 dockerfile = '''
 FROM python:2.7
+MAINTAINER Jonnatas Matias <matiasjonnatas@gmail.com>
 
 EXPOSE 8000
 
 WORKDIR /home/codes/
 
-CMD ["/bin/bash"]
+RUN pip install unicodecsv
 
+VOLUME /tmp/codes/:/home/codes/
+
+CMD ["/bin/bash"]
 '''
 
 base_url = 'unix://var/run/docker.sock'
@@ -55,8 +59,7 @@ def read_file(file_type='dict', delimiter=';', quotechar='"', mode='rb'):
                 quotechar=quotechar
             )
         elif file_type == 'json':
-            data = json.load(datafile)
-            return data
+            return json.load(datafile)
         else:
             data = []
 

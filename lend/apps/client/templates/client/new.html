@@ -2,29 +2,6 @@
 
 {% load static %}
 
-{% block scripts %}
-{{ block.super }}
-<script type="text/javascript" src="{% static 'ace-builds/src-min-noconflict/ace.js'%}" charset="utf-8"></script>
-<script type="text/javascript" src="{% static 'lend/js/ace-config.js'%}" charset="utf-8"></script>
-<script>
-$('input[id=csv_file]').change(function() {
-    $('#file').val($(this).val().replace('C:\\fakepath\\', ''));
-});
-$('#file').load(function() {
-    $('#file').val($('input[id=csv_file]').val().replace('C:\\fakepath\\', ''));
-});
-$('#clear_file').click(function() {
-    $('#file').val('');
-    $('#input[id=csv_file]').val('');
-    $(this).focus()
-});
-$('#submit').click(function() {
-    $('#code').val(editor.getValue());
-    $('#submit_hidden').click();
-});
-</script>
-{% endblock scripts %}
-
 {% block content %}
 <div class="pull-top-left">
     <a class="btn btn-default btn-fab" href="{% url 'index' %}">
@@ -100,9 +77,10 @@ $('#submit').click(function() {
                 <div class="well bs-component">
                     <div class="form-group {% if form.csv_file.errors %}has-error{% endif %}">
                         <div class="col-lg-12 col-centered">
-                            <input id="file" class="form-control" disabled placeholder="CSV Data File" type="text">
+                            <input id="id_file" name="file" class="form-control" disabled placeholder="CSV Data File" type="text">
+                            <input id="id_saved_file" name="saved_file" class="hidden" type="text" value="{{ form.csv_file.value }}">
                             <label class="btn btn-default btn-raised">
-                                Upload <input type="file" style="display: none;" id="csv_file" name="csv_file">
+                                Upload <input type="file" style="display: none;" id="id_csv_file" name="csv_file">
                             </label>
                             <a href="javascript:void();" id="clear_file" class="pull-right btn btn-default btn-raised">
                                 Clear
@@ -134,3 +112,24 @@ $('#submit').click(function() {
     {% endblock btn-bottom-right %}
 </div>
 {% endblock content %}
+
+{% block scripts %}
+{{ block.super }}
+<script type="text/javascript" src="{% static 'ace-builds/src-min-noconflict/ace.js'%}" charset="utf-8"></script>
+<script type="text/javascript" src="{% static 'lend/js/ace-config.js'%}" charset="utf-8"></script>
+<script>
+$('#id_csv_file').change(function() {
+    $('#id_saved_file').val($(this).val().replace('C:\\fakepath\\', ''));
+    $('#id_file').val($(this).val().replace('C:\\fakepath\\', ''));
+});
+$('#clear_file').click(function() {
+    $('#id_saved_file').val('');
+    $('#id_file').val('');
+    $('#id_csv_file').val('');
+});
+$('#submit').click(function() {
+    $('#code').val(editor.getValue());
+    $('#submit_hidden').click();
+});
+</script>
+{% endblock scripts %}

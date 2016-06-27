@@ -20,6 +20,7 @@ def run_command_in_container(container, **options):
     run = functools.partial(docker.container_run_command, container_up)
 
     if csv_file:
+        run(command='pip install unicodecsv')
         container_model.step_loading_csv()
         csv_python_file = csv_parser.format(
             datafile=os.path.basename(csv_file.content.file.name),
@@ -67,4 +68,5 @@ def stop_container(container):
     if container_model.cid:
         docker.container_down(container)
     container_model.stopped = True
-    container_model.save()
+    container_model.running = False
+    container_model.step_resting()
