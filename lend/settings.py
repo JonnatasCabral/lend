@@ -95,7 +95,7 @@ WSGI_APPLICATION = 'lend.wsgi.application'
 DATABASES = {
     'default': config(
         'DATABASE_URL', default='sqlite:///{0}/{1}'.format(
-            BASE_DIR.child('db'), 'alpha.sqlite3'
+            BASE_DIR.child('db'), 'lend.sqlite3'
         ), cast=parse),
 }
 

@@ -14,7 +14,6 @@ from core.utils import docker
 from core.views import LoginRequiredMixin
 from core.views import OwnershipRequiredMixin
 from django.core.urlresolvers import reverse
-from django.core.urlresolvers import reverse_lazy
 from django.views.generic import FormView
 from django.views.generic import ListView
 from django.views.generic import RedirectView
