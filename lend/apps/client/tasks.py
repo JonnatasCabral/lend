@@ -40,7 +40,8 @@ def run_command_in_container(container, **options):
 
 @celery.task
 def stop_and_remove_container(container):
-    container_model = Container.objects.get(cid=container['Id'])
+    container_model = Container.objects.filter(
+        cid=container['Id']).latest('pk')
     if container_model.cid:
         docker.container_rm(container)
     container_model.cid = None
@@ -50,7 +51,8 @@ def stop_and_remove_container(container):
 
 @celery.task
 def stop_container(container):
-    container_model = Container.objects.get(cid=container['Id'])
+    container_model = Container.objects.filter(
+        cid=container['Id']).latest('pk')
     if container_model.cid:
         docker.container_down(container)
     container_model.stopped = True
