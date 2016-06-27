@@ -70,7 +70,7 @@ $('#submit').click(function() {
             </div>
             <div class="col-lg-12">
                 <div class="well bs-component">
-                    <pre id="editor">{{ form.code.value|default:'# Paste your code here.' }}</pre>
+                    <pre id="editor">{% if form.code.value %}{{ form.code.value }}{% else %}{{ initial_comment }}{% endif %}</pre>
                     <textarea type="text" class="hidden" id="code" name="code"></textarea>
                     {% if form.code.errors %}
                     <div class="alert alert-dismissible alert-danger">

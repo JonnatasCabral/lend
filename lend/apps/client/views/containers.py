@@ -7,54 +7,19 @@ from client.forms import StopContainerForm
 from client.models import Container
 from client.models import CSVFile
 from client.models import UploadedCode
-from client.tasks import run_command_in_container
 from client.tasks import stop_and_remove_container
 from client.tasks import stop_container
-from core.utils import docker
+from client.views.mixins import ContainerMixin
+from client.views.mixins import RunMixin
+from core.constants import editor_initial_comment
 from core.views import LoginRequiredMixin
 from core.views import OwnershipRequiredMixin
 from django.core.urlresolvers import reverse
+from django.http import HttpResponseRedirect
+from django.views.generic import View
 from django.views.generic import FormView
 from django.views.generic import ListView
 from django.views.generic import RedirectView
-import os
-
-
-class RunMixin(object):
-
-    def run_code_in_container(self, container_model, **options):
-        docker_container = self.get_or_create_container(container_model)
-        container_model.running = True
-        container_model.stopped = False
-        container_model.step_resting()
-        run_command_in_container.delay(docker_container, **options)
-
-    def set_code_file(self, container, code):
-        media = code.get_directory()
-        if not os.path.exists(media):
-            os.makedirs(media)
-
-        filepath = os.path.join(media, '{}.py'.format(container.title))
-        if code.requirements:
-            requirements = os.path.join(media, 'requirements.txt')
-            with open(requirements, 'wb') as reqfile:
-                reqfile.write(code.requirements)
-        with open(filepath, 'wb') as codefile:
-            codefile.write(code.content)
-
-    def get_or_create_container(self, container):
-        if not container.cid:
-            container_data = docker.cli.inspect_container(
-                docker.container_create())
-            container.cid = container_data['Id']
-            container.name = container_data['Name'].strip('/')
-            container.save()
-        return container.get_object()
-
-
-class ContainerMixin(object):
-    model = Container
-    pk_url_kwarg = 'container_pk'
 
 
 class ContainersListView(LoginRequiredMixin, ListView):
@@ -66,18 +31,15 @@ class ContainersListView(LoginRequiredMixin, ListView):
             **kwargs).filter(created_by=self.request.user).activated()
 
 
-class StopContainerView(ContainerMixin, OwnershipRequiredMixin, FormView):
-    template_name = 'client/running.html'
+class StopContainerView(ContainerMixin, OwnershipRequiredMixin, View):
     form_class = StopContainerForm
 
-    def form_valid(self, form):
-        form_valid = super(StopContainerView, self).form_valid(form)
+    def post(self, request, *args, **kwargs):
         container = self.get_object()
-        stop_container(container.get_object())
-        return form_valid
-
-    def get_success_url(self):
-        return reverse('client:editor', args=[self.get_object().pk])
+        stop_container.delay(container.get_object())
+        return HttpResponseRedirect(
+            reverse('client:editor', args=[self.get_object().pk])
+        )
 
 
 class CodeEditorView(
@@ -99,7 +61,8 @@ class CodeEditorView(
             'object': self.get_object(),
             'result': self.get_object().get_code().result,
             'actual_step': dict(RUNNING_STEPS_CHOICES)[
-                self.get_object().running_step]
+                self.get_object().running_step],
+            'initial_comment': editor_initial_comment
         })
         return context
 
@@ -175,6 +138,13 @@ class CreateContainerView(RunMixin, LoginRequiredMixin, FormView):
             'user': self.request.user
         })
         return kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateContainerView, self).get_context_data(**kwargs)
+        context.update({
+            'initial_comment': editor_initial_comment
+        })
+        return context
 
     def form_valid(self, form):
         self.container = Container.objects.create(

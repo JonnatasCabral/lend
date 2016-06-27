@@ -20,10 +20,9 @@ def run_command_in_container(container, **options):
     run = functools.partial(docker.container_run_command, container_up)
 
     if csv_file:
-        run(command='pip install unicodecsv')
         container_model.step_loading_csv()
         csv_python_file = csv_parser.format(
-            csvfile=os.path.basename(csv_file.content.file.name),
+            datafile=os.path.basename(csv_file.content.file.name),
         )
         csv_path = os.path.join(code.get_directory(), 'lendcsv.py')
         with open(csv_path, 'wb') as f:
