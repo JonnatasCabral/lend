@@ -49,7 +49,16 @@ class Container(LendModel):
         }
 
     def get_code(self):
-        return self.uploadedcode_set.latest('pk')
+        try:
+            return self.uploadedcode_set.latest('pk')
+        except UploadedCode.DoesNotExist:
+            return
+
+    def get_csv_file(self):
+        try:
+            return self.csvfile_set.latest('pk')
+        except CSVFile.DoesNotExist:
+            return
 
     def __unicode__(self):
         return '%s, created_by=%s' % (self.name or self.cid, self.created_by)
